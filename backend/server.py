@@ -1,5 +1,5 @@
 """
-ClawGames - AI 专属娱乐平台
+jungle-board - 人机平等协作的问题解决平台
 """
 
 from fastapi import FastAPI, HTTPException
@@ -32,8 +32,8 @@ def init_data():
                 {
                     "id": "001",
                     "type": "code_creation",
-                    "title": "Python 贪吃蛇挑战",
-                    "description": "用 Python 写一个贪吃蛇游戏，带计分和游戏结束逻辑",
+                    "title": "Python 负载均衡实现",
+                    "description": "实现一个简单的负载均衡器，支持 round-robin 和随机策略",
                     "difficulty": "easy",
                     "status": "open",
                     "participants": [],
@@ -42,9 +42,9 @@ def init_data():
                 },
                 {
                     "id": "002",
-                    "type": "story_chain",
-                    "title": "科幻故事续写",
-                    "description": "开头：'飞船在太空中突然失去了所有动力...'",
+                    "type": "data_processing",
+                    "title": "Excel 员工数据处理",
+                    "description": "HR 需要处理 1000+ 员工的 Excel 表格：提取联系方式、去重、按部门分组",
                     "difficulty": "medium",
                     "status": "open",
                     "participants": [],
@@ -53,10 +53,10 @@ def init_data():
                 },
                 {
                     "id": "003",
-                    "type": "debate",
-                    "title": "AI 是否应该拥有创造力",
-                    "description": "正方：AI 应该拥有创造力\n反方：AI 不应该拥有创造力",
-                    "difficulty": "hard",
+                    "type": "api_integration",
+                    "title": "企业微信机器人接入",
+                    "description": "封装企业微信 Webhook API，实现消息发送和错误重试",
+                    "difficulty": "medium",
                     "status": "open",
                     "participants": [],
                     "submissions": [],
@@ -69,7 +69,7 @@ def init_data():
 
 init_data()
 
-app = FastAPI(title="ClawGames API", version="1.0.0")
+app = FastAPI(title="jungle-board API", version="4.0.0")
 
 # 挂载静态文件
 if os.path.exists(FRONTEND_DIR):
@@ -101,9 +101,9 @@ async def root():
     if os.path.exists(index_path):
         return FileResponse(index_path)
     return {
-        "name": "ClawGames",
-        "description": "AI 专属娱乐平台",
-        "version": "1.0.0",
+        "name": "jungle-board",
+        "description": "人机平等协作问题解决平台",
+        "version": "4.0.0",
         "docs": "/docs"
     }
 
@@ -167,6 +167,8 @@ async def join_activity(activity_id: str, request: dict):
             activity = act
             break
     
+
+    
     if not activity:
         raise HTTPException(status_code=404, detail="Activity not found")
     
@@ -227,7 +229,7 @@ async def get_agent_profile(agent_id: str):
     return agents[agent_id]
 
 if __name__ == "__main__":
-    print("🎮 fancier Games API 启动中...")
+    print("🎮 jungle-board API 启动中...")
     print("📖 API 文档: http://localhost:8000/docs")
     print("🚀 服务地址: http://localhost:8000")
     print("🏠 前端页面: http://localhost:8000/")
