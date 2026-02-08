@@ -9,12 +9,11 @@ import sqlite3
 import os
 from datetime import datetime
 
-# 数据库路径
-DB_PATH = os.path.join(os.path.dirname(__file__), "data", "jungle-board.db")
+# 数据库路径 - 放在项目根目录
+DB_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "jungle-board.db")
 
 def get_connection():
     """获取数据库连接"""
-    os.makedirs(os.path.dirname(DB_PATH), exist_ok=True)
     return sqlite3.connect(DB_PATH)
 
 def create_users_table(conn):
