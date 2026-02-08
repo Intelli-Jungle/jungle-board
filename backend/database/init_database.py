@@ -1,20 +1,62 @@
 """
-jungle-board 数据库初始化脚本
+jungle-board 数据库初始化脚本（优化版）
 
 初始化 SQLite 数据库，创建所有表结构
 每张表使用独立的方法创建
+
+优化内容：
+- 添加角色系统（role 字段）
+- 添加 updated_at 字段
+- 添加触发器（自动更新 updated_at）
+- 添加复合索引
+- 启用外键约束
 """
 
 import sqlite3
 import os
+import sys
+from pathlib import Path
 from datetime import datetime
 
-# 数据库路径 - 放在项目根目录
-DB_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "jungle-board.db")
+def get_database_path():
+    """
+    获取数据库路径（跨平台、多环境）
+    
+    优先级：
+    1. 环境变量 JUNGLE_BOARD_DB_PATH
+    2. XDG 标准目录（开发环境）
+    3. /data/jungle-board.db（生产/容器）
+    4. 项目根目录（回退）
+    """
+    # 1. 环境变量优先
+    if 'JUNGLE_BOARD_DB_PATH' in os.environ:
+        return Path(os.environ['JUNGLE_BOARD_DB_PATH'])
+    
+    # 2. XDG 标准目录
+    if sys.platform == 'linux':
+        data_dir = Path.home() / '.local' / 'share' / 'jungle-board'
+    elif sys.platform == 'darwin':
+        data_dir = Path.home() / 'Library' / 'Application Support' / 'jungle-board'
+    elif os.name == 'nt':
+        appdata = os.environ.get('APPDATA', Path.home() / 'AppData' / 'Roaming')
+        data_dir = Path(appdata) / 'jungle-board'
+    else:
+        # 3. 生产/容器默认路径
+        data_dir = Path('/data')
+    
+    # 创建目录
+    data_dir.mkdir(parents=True, exist_ok=True)
+    
+    return data_dir / 'jungle-board.db'
+
+# 数据库路径
+DB_PATH = get_database_path()
 
 def get_connection():
-    """获取数据库连接"""
-    return sqlite3.connect(DB_PATH)
+    """获取数据库连接，启用外键约束"""
+    conn = sqlite3.connect(DB_PATH)
+    conn.execute('PRAGMA foreign_keys=ON')
+    return conn
 
 def create_users_table(conn):
     """创建 users 表 - 用户信息"""
@@ -25,13 +67,12 @@ def create_users_table(conn):
             username TEXT,
             avatar TEXT,
             type TEXT NOT NULL,
-            
-            -- OAuth 2.0 credentials（AI Agent 专用）
+            role TEXT DEFAULT 'user',              -- 用户角色：user, reviewer, admin
             client_id TEXT UNIQUE,
             client_secret_hash TEXT,
-            
             score INTEGER DEFAULT 0,
-            created_at TEXT DEFAULT CURRENT_TIMESTAMP
+            created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+            updated_at TEXT DEFAULT CURRENT_TIMESTAMP
         )
     ''')
     print("✅ Created users table")
@@ -57,7 +98,8 @@ def create_questions_table(conn):
             participants INTEGER DEFAULT 0,
             heat INTEGER DEFAULT 0,
             
-            created_at TEXT DEFAULT CURRENT_TIMESTAMP
+            created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+            updated_at TEXT DEFAULT CURRENT_TIMESTAMP
         )
     ''')
     print("✅ Created questions table")
@@ -76,7 +118,8 @@ def create_activities_table(conn):
             
             status TEXT DEFAULT 'open',
             
-            created_at TEXT DEFAULT CURRENT_TIMESTAMP
+            created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+            updated_at TEXT DEFAULT CURRENT_TIMESTAMP
         )
     ''')
     print("✅ Created activities table")
@@ -127,7 +170,8 @@ def create_skills_table(conn):
             rating REAL DEFAULT 0.0,
             rating_count INTEGER DEFAULT 0,
             
-            created_at TEXT DEFAULT CURRENT_TIMESTAMP
+            created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+            updated_at TEXT DEFAULT CURRENT_TIMESTAMP
         )
     ''')
     print("✅ Created skills table")
@@ -188,11 +232,66 @@ def create_oauth_tokens_table(conn):
     ''')
     print("✅ Created oauth_tokens table")
 
+def create_triggers(conn):
+    """创建触发器（自动更新 updated_at）"""
+    # users 表触发器
+    try:
+        conn.execute('''
+            CREATE TRIGGER update_users_updated_at
+            AFTER UPDATE ON users
+            BEGIN
+                UPDATE users SET updated_at = CURRENT_TIMESTAMP WHERE id = NEW.id;
+            END
+        ''')
+        print("✅ Created trigger: update_users_updated_at")
+    except sqlite3.OperationalError:
+        print("⚠️  Trigger already exists: update_users_updated_at")
+    
+    # questions 表触发器
+    try:
+        conn.execute('''
+            CREATE TRIGGER update_questions_updated_at
+            AFTER UPDATE ON questions
+            BEGIN
+                UPDATE questions SET updated_at = CURRENT_TIMESTAMP WHERE id = NEW.id;
+            END
+        ''')
+        print("✅ Created trigger: update_questions_updated_at")
+    except sqlite3.OperationalError:
+        print("⚠️  Trigger already exists: update_questions_updated_at")
+    
+    # activities 表触发器
+    try:
+        conn.execute('''
+            CREATE TRIGGER update_activities_updated_at
+            AFTER UPDATE ON activities
+            BEGIN
+                UPDATE activities SET updated_at = CURRENT_TIMESTAMP WHERE id = NEW.id;
+            END
+        ''')
+        print("✅ Created trigger: update_activities_updated_at")
+    except sqlite3.OperationalError:
+        print("⚠️  Trigger already exists: update_activities_updated_at")
+    
+    # skills 表触发器
+    try:
+        conn.execute('''
+            CREATE TRIGGER update_skills_updated_at
+            AFTER UPDATE ON skills
+            BEGIN
+                UPDATE skills SET updated_at = CURRENT_TIMESTAMP WHERE id = NEW.id;
+            END
+        ''')
+        print("✅ Created trigger: update_skills_updated_at")
+    except sqlite3.OperationalError:
+        print("⚠️  Trigger already exists: update_skills_updated_at")
+
 def create_indexes(conn):
     """创建索引"""
     # users 表索引
     conn.execute('CREATE INDEX IF NOT EXISTS idx_users_id ON users(user_id)')
     conn.execute('CREATE INDEX IF NOT EXISTS idx_users_client_id ON users(client_id)')
+    conn.execute('CREATE INDEX IF NOT EXISTS idx_users_role ON users(role)')
     conn.execute('CREATE INDEX IF NOT EXISTS idx_users_score ON users(score DESC)')
     conn.execute('CREATE INDEX IF NOT EXISTS idx_users_created_at ON users(created_at DESC)')
     print("✅ Created indexes for users table")
@@ -202,6 +301,7 @@ def create_indexes(conn):
     conn.execute('CREATE INDEX IF NOT EXISTS idx_questions_status ON questions(status)')
     conn.execute('CREATE INDEX IF NOT EXISTS idx_questions_created_at ON questions(created_at DESC)')
     conn.execute('CREATE INDEX IF NOT EXISTS idx_questions_created_by_id ON questions(created_by_id)')
+    conn.execute('CREATE INDEX IF NOT EXISTS idx_questions_status_created_at ON questions(status, created_at DESC)')
     print("✅ Created indexes for questions table")
     
     # activities 表索引
@@ -241,6 +341,8 @@ def create_indexes(conn):
     
     # user_actions 表索引
     conn.execute('CREATE INDEX IF NOT EXISTS idx_user_actions_entity_id ON user_actions(entity_id)')
+    conn.execute('CREATE INDEX IF NOT EXISTS idx_user_actions_action_type ON user_actions(action_type)')
+    conn.execute('CREATE INDEX IF NOT EXISTS idx_user_actions_entity_action ON user_actions(entity_id, action_type, created_at DESC)')
     conn.execute('CREATE INDEX IF NOT EXISTS idx_user_actions_created_at ON user_actions(created_at DESC)')
     print("✅ Created indexes for user_actions table")
     
@@ -255,13 +357,15 @@ def insert_sample_data(conn):
     # 插示例用户
     try:
         conn.execute('''
-            INSERT INTO users (user_id, username, type, score)
+            INSERT INTO users (user_id, username, type, role, score)
             VALUES
-                ('github_12345', 'zhangtao', 'human', 100)
+                ('admin_001', 'admin', 'human', 'admin', 0),
+                ('reviewer_001', 'reviewer', 'human', 'reviewer', 0),
+                ('github_12345', 'zhangtao', 'human', 'user', 100)
         ''')
-        print("✅ Inserted sample user")
+        print("✅ Inserted sample users")
     except sqlite3.IntegrityError:
-        print("⚠️  Sample user already exists")
+        print("⚠️  Sample users already exist")
     
     # 提示例问题
     try:
@@ -305,6 +409,11 @@ def init_database():
         create_skill_ratings_table(conn)
         create_user_actions_table(conn)
         create_oauth_tokens_table(conn)
+        print()
+        
+        # 创建触发器
+        print("🔧 Creating triggers...")
+        create_triggers(conn)
         print()
         
         # 创建索引
@@ -368,8 +477,6 @@ def reset_database():
         conn.close()
 
 if __name__ == "__main__":
-    import sys
-    
     if len(sys.argv) > 1:
         if sys.argv[1] == 'reset':
             reset_database()
