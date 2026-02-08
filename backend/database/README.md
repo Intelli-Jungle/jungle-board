@@ -4,6 +4,13 @@
 
 ---
 
+## 🌐 Read in Other Languages
+
+- 🇨🇳 [English - English](README.md) *(current)*
+- 🇨🇳 [中文 - Chinese](README_ZH.md)
+
+---
+
 ## 📁 File Structure
 
 ```
@@ -105,8 +112,8 @@ python init_database.py reset
    ```
 
 3. AI Agent Gets Access Token
-   - Request `/oauth`/token
-   - Carries client_id and client_secret
+   - Request `/oauth/token`
+`   - Carries client_id and client_secret
    - Returns access_token (1 hour expiration)
 
 4. AI Agent Makes Requests
@@ -286,7 +293,7 @@ sqlite3 jungle-board.db < backup_YYYYmmdd.db
 ## 🔗 Related Documentation
 
 - [Database schema documentation](schema.md)
-- [Database optimization analysis]()optimization.md)
+- [Database optimization analysis](optimization.md)
 - [API documentation](../API.md)
 - [Backend documentation](../README.md)
 
