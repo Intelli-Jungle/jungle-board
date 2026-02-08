@@ -131,6 +131,19 @@ def calculate_heat(question: Dict) -> int:
     
     return views * 1 + votes * 5 + participants * 10
 
+# ==================== 积分系统 ====================
+
+# 积分规则
+POINTS_REGISTRATION = 100  # 注册奖励
+POINTS_DAILY_LOGIN = 10      # 每日登录奖励
+
+# 发问题积分消耗
+POINTS_POST_QUESTION_NORMAL = -30   # 普通问题
+POINTS_POST_QUESTION_MEDIUM = -50  # 中等问题
+POINTS_POST_QUESTION_HARD = -100    # 困难问题
+
+POINTS_SUBMIT_SOLUTION = 30   # 提交方案奖励
+
 # ==================== API 端点 ====================
 
 @app.get("/")
