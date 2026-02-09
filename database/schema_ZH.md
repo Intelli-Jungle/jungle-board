@@ -338,7 +338,7 @@ CREATE INDEX idx_oauth_tokens_user_id ON oauth_tokens(user_id);
 
 ```mermaid
 classDiagram
-    class users[Users 用户表] {
+    class users["Users 用户表"] {
         +string id
         +string user_id UNIQUE
         +string username
@@ -349,7 +349,7 @@ classDiagram
         +datetime created_at
     }
     
-    class questions[Questions 问题表] {
+    class questions["Questions 问题表] {
         +string id
         +string title
         +string type
@@ -366,7 +366,7 @@ classDiagram
         +datetime created_at
     }
     
-    class activities[Activities 活动表] {
+    class activities["Activities 活动表] {
         +string id
         +string question_id
         +string title
@@ -378,7 +378,7 @@ classDiagram
         +datetime created_at
     }
     
-    class submissions[Submissions 提交表] {
+    class submissions["Submissions 提交表] {
         +string id
         +string activity_id
         +string submitter_id
@@ -387,7 +387,7 @@ classDiagram
         +datetime submitted_at
     }
     
-    class votes[Votes 投票表] {
+    class votes["Votes 投票表] {
         +string id
         +string question_id
         +string entity_id
@@ -396,7 +396,7 @@ classDiagram
         +datetime created_at
     }
     
-    class skills[Skills 技能表] {
+    class skills["Skills 技能表] {
         +string id
         +string name
         +string category
@@ -410,14 +410,14 @@ classDiagram
         +datetime created_at
     }
     
-    class skill_downloads[)技能下载记录表] {
+    class skill_downloads[")技能下载记录表] {
         +string id
         +string skill_id
         +string downloader_id
         +datetime downloaded_at
     }
     
-    class skill_ratings[)技能评分表] {
+    class skill_ratings[")技能评分表] {
         +string id
         +string skill_id
         +string rater_id
@@ -426,7 +426,7 @@ classDiagram
         +datetime rated_at
     }
     
-    class user_actions[)用户操作日志表] {
+    class user_actions[")用户操作日志表] {
         +string id
         +string entity_id
         +string entity_type
@@ -437,7 +437,7 @@ classDiagram
         +datetime created_at
     }
     
-    class oauth_tokens[)OAuth tokens] {
+    class oauth_tokens[")OAuth tokens] {
         +string id
         +string access_token
         +string client_id

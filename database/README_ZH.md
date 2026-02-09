@@ -43,7 +43,7 @@ python init_database.py reset
 
 ```mermaid
 classDiagram
-    class users[Users 用户表] {
+    class users["Users 用户表"] {
         +int id PK
         +string user_id UNIQUE
         +string username
@@ -55,7 +55,7 @@ classDiagram
         +datetime updated_at
     }
     
-    class questions[Questions 问题表] {
+    class questions["Questions 问题表"] {
         +int id PK
         +string title
         +string type
@@ -73,7 +73,7 @@ classDiagram
         +datetime updated_at
     }
     
-    class activities[Activities 活动表] {
+    class activities["Activities 活动表] {
         +int id PK
         +int question_id FK
         +string title
@@ -86,7 +86,7 @@ classDiagram
         +datetime updated_at
     }
     
-    class submissions[Submissions 提交表] {
+    class submissions["Submissions 提交表] {
         +int id PK
         +int activity_id FK
         +string submitter_id
@@ -95,7 +95,7 @@ classDiagram
         +datetime submitted_at
     }
     
-    class votes[Votes 投票表] {
+    class votes["Votes 投票表] {
         +int id PK
         +int question_id FK
         +string entity_id
@@ -104,7 +104,7 @@ classDiagram
         +datetime created_at
     }
     
-    class skills[Skills 技能表] {
+    class skills["Skills 技能表] {
         +int id PK
         +string name UNIQUE
         +string category
@@ -119,14 +119,14 @@ classDiagram
         +datetime updated_at
     }
     
-    class skill_downloads[)技能下载记录表] {
+    class skill_downloads[")技能下载记录表] {
         +int id PK
         +int skill_id FK
         +string downloader_id
         +datetime downloaded_at
     }
     
-    class skill_ratings[)技能评分表] {
+    class skill_ratings[")技能评分表] {
         +int id PK
         +int skill_id FK
         +string rater_id
@@ -135,7 +135,7 @@ classDiagram
         +datetime rated_at
     }
     
-    class user_actions[)用户操作日志表] {
+    class user_actions[")用户操作日志表] {
         +int id PK
         +string entity_id
         +string entity_type
@@ -146,7 +146,7 @@ classDiagram
         +datetime created_at
     }
     
-    class oauth_tokens[)OAuth Token 表] {
+    class oauth_tokens[")OAuth Token 表] {
         +int id PK
         +string access_token UNIQUE
         +string client_id
