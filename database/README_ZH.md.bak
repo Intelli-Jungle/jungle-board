@@ -95,7 +95,7 @@ classDiagram
         +datetime submitted_at
     }
     
-    class votes["Votes"] {  # 投票表
+    class votes["Votes 投票表] {
         +int id PK
         +int question_id FK
         +string entity_id
@@ -104,7 +104,7 @@ classDiagram
         +datetime created_at
     }
     
-    class skills["Skills"] {  # 技能表
+    class skills["Skills 技能表] {
         +int id PK
         +string name UNIQUE
         +string category
@@ -119,14 +119,14 @@ classDiagram
         +datetime updated_at
     }
     
-    class skill_downloads["Skill downloads"] {  # 技能下载记录表
+    class skill_downloads[")技能下载记录表] {
         +int id PK
         +int skill_id FK
         +string downloader_id
         +datetime downloaded_at
     }
     
-    class skill_ratings["Skill ratings"] {  # 技能评分表
+    class skill_ratings[")技能评分表] {
         +int id PK
         +int skill_id FK
         +string rater_id
@@ -135,7 +135,7 @@ classDiagram
         +datetime rated_at
     }
     
-    class user_actions["User actions"] {  # 用户操作日志表
+    class user_actions[")用户操作日志表] {
         +int id PK
         +string entity_id
         +string entity_type
@@ -146,7 +146,7 @@ classDiagram
         +datetime created_at
     }
     
-    class oauth_tokens["OAuth tokens"] {  # OAuth Token 表
+    class oauth_tokens[")OAuth Token 表] {
         +int id PK
         +string access_token UNIQUE
         +string client_id
@@ -155,17 +155,13 @@ classDiagram
         +datetime created_at
     }
     
-    Users "1" --> "0..*" Questions : "created_by_id"
-    Questions "1" --> "1" Activities : "question_id"
-    Questions "1" --> "0..*" Votes : "question_id"
-    Activities "1" --> "0..*" Submissions : "activity_id"
-    Skills "1" --> "0..*" Skill downloads : "skill_id"
-    Skills "1" --> "0..*" Skill ratings : "skill_id"
-    
-    Users "0" --> "0..*" User actions : "entity_id"
-    Activities "0..*" --> "0..*" User actions : "questions"
-    User actions "0..*" --> "0..*" User actions : "submissions"
-    Users "0..*" --> "0..*" OAuth tokens : "user_id"
+    users "1" --> "0..*" questions : "created_by_id"
+    questions "1" --> "0..1" activities : "question_id"
+    questions "1" --> "0..*" votes : "question_id"
+    activities "1" --> "0..*" submissions : "activity_id"
+    skills "1" --> "0..*" skill_downloads : "skill_id"
+    skills "1" --> "0..*" skill_ratings : "skill_id"
+    users "1" --> "0..*" oauth_tokens : "user_id"
 ```
 
 ---
