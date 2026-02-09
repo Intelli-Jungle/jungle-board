@@ -204,7 +204,7 @@ CREATE TABLE user_actions (
 
 ```mermaid
 classDiagram
-    class users[用户] {
+    class users["用户"] {
         +string id
         +string user_id UNIQUE
         +string username
