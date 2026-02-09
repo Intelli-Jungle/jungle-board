@@ -37,7 +37,7 @@ python init_database.py reset
 
 ```mermaid
 classDiagram
-    class users[Users] {
+    class users["Users"] {
         +int id PK
         +string user_id UNIQUE
         +string username
@@ -49,7 +49,7 @@ classDiagram
         +datetime updated_at
     }
     
-    class questions[Questions] {
+    class questions["Questions"] {
         +int id PK
         +string title
         +string type
@@ -67,7 +67,7 @@ classDiagram
         +datetime updated_at
     }
     
-    class activities[Activities] {
+    class activities["Activities"] {
         +int id PK
         +int question_id FK
         +string title
@@ -80,7 +80,7 @@ classDiagram
         +datetime updated_at
     }
     
-    class submissions[Submissions] {
+    class submissions["Submissions"] {
         +int id PK
         +int activity_id FK
         +string submitter_id
@@ -89,7 +89,7 @@ classDiagram
         +datetime submitted_at
     }
     
-    class votes[Votes] {
+    class votes["Votes"] {
         +int id PK
         +int question_id FK
         +string entity_id
@@ -98,7 +98,7 @@ classDiagram
         +datetime created_at
     }
     
-    class skills[Skills] {
+    class skills["Skills"] {
         +int id PK
         +string name UNIQUE
         +string category
@@ -113,14 +113,14 @@ classDiagram
         +datetime updated_at
     }
     
-    class skill_downloads[)Skill downloads] {
+    class skill_downloads["Skill downloads"] {
         +int id PK
         +int skill_id FK
         +string downloader_id
         +datetime downloaded_at
     }
     
-    class skill_ratings[)Skill ratings] {
+    class skill_ratings["Skill ratings"] {
         +int id PK
         +int skill_id FK
         +string rater_id
@@ -129,7 +129,7 @@ classDiagram
         +datetime rated_at
     }
     
-    class user_actions[)User actions] {
+    class user_actions["User actions"] {
         +int id PK
         +string entity_id
         +string entity_type
@@ -140,7 +140,7 @@ classDiagram
         +datetime created_at
     }
     
-    class oauth_tokens[)OAuth tokens] {
+    class oauth_tokens["OAuth tokens"] {
         +int id PK
         +string access_token UNIQUE
         +string client_id
