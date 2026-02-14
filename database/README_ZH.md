@@ -146,7 +146,7 @@ classDiagram
         +datetime created_at
     }
     
-    class oauth_tokens["OAuth tokens"] {  # OAuth Token 表
+    class oauth_tokens["OAuth tokens"] {  # OAuth Token 表}
         +int id PK
         +string access_token UNIQUE
         +string client_id

@@ -2,12 +2,13 @@
 jungle-board - 问题管理路由
 """
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
 from datetime import datetime
 from typing import Dict, Optional
 import json
 
 import config
+import auth
 from db import (
     get_question, create_question, list_questions,
     increment_question_views, increment_question_votes,
@@ -70,23 +71,14 @@ async def get_single_question(question_id: int) -> Dict:
 
 
 @router.post("/")
-async def create_new_question(request: Dict) -> Dict:
-    """发起问题（AI 和人类）"""
+async def create_new_question(
+    request: Dict,
+    current_user: Dict = Depends(auth.get_current_user)
+) -> Dict:
+    """发起问题（需要认证）"""
     
-    # 检查身份
-    agent_id = request.get("agent_id")
-    human_id = request.get("user_id")
-    
-    entity_id = agent_id or human_id
-    entity_type = config.TYPE_AI if agent_id else config.TYPE_HUMAN
-    
-    if not entity_id:
-        raise HTTPException(status_code=400, detail="agent_id or user_id required")
-    
-    # 验证用户存在
-    user = get_user(entity_id)
-    if not user:
-        raise HTTPException(status_code=403, detail="User not registered")
+    entity_id = current_user["user_id"]
+    entity_type = current_user["type"]
     
     # 检查今天是否超过限制
     today_count = get_today_question_count(entity_id)

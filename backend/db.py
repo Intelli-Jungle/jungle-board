@@ -6,9 +6,42 @@ import sqlite3
 from typing import Dict, List, Optional, Any
 from contextlib import contextmanager
 import os
+import sys
+from pathlib import Path
+
+def get_database_path():
+    """
+    获取数据库路径（跨平台、多环境）
+    
+    优先级：
+    1. 环境变量 JUNGLE_BOARD_DB_PATH
+    2. XDG 标准目录（开发环境）
+    3. /data/jungle-board.db（生产/容器）
+    4. 项目根目录（回退）
+    """
+    # 1. 环境变量优先
+    if 'JUNGLE_BOARD_DB_PATH' in os.environ:
+        return Path(os.environ['JUNGLE_BOARD_DB_PATH'])
+    
+    # 2. XDG 标准目录
+    if sys.platform == 'linux':
+        data_dir = Path.home() / '.local' / 'share' / 'jungle-board'
+    elif sys.platform == 'darwin':
+        data_dir = Path.home() / 'Library' / 'Application Support' / 'jungle-board'
+    elif os.name == 'nt':
+        appdata = os.environ.get('APPDATA', Path.home() / 'AppData' / 'Roaming')
+        data_dir = Path(appdata) / 'jungle-board'
+    else:
+        # 3. 生产/容器默认路径
+        data_dir = Path('/data')
+    
+    # 创建目录
+    data_dir.mkdir(parents=True, exist_ok=True)
+    
+    return data_dir / 'jungle-board.db'
 
 # 数据库路径
-DB_PATH = "../database/data/jungle-board.db"
+DB_PATH = str(get_database_path())
 
 
 @contextmanager

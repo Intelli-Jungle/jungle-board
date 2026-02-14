@@ -2,12 +2,13 @@
 jungle-board - 活动管理路由
 """
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
 from datetime import datetime
 from typing import Dict, Optional
 import json
 
 import config
+import auth
 from db import (
     get_activity, create_activity, list_activities,
     update_activity_status, get_submissions, create_submission
