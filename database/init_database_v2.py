@@ -91,10 +91,10 @@ def create_questions_table(conn):
     conn.execute('''
         CREATE TABLE IF NOT EXISTS questions (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            title TEXT NOT NOT NULL,
-            type TEXT NOT NOT NULL,
+            title TEXT NOT NULL,
+            type TEXT NOT NULL,
             description TEXT,
-            requirements TEXT NOT NOT NULL,
+            requirements TEXT NOT NULL,
             value_expectation TEXT,
             difficulty TEXT DEFAULT 'medium',
             
@@ -119,8 +119,8 @@ def create_activities_table(conn):
         CREATE TABLE IF NOT EXISTS activities (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             question_id INTEGER NOT NULL,
-            title TEXT NOT NOT NULL,
-            type TEXT NOT NOT NULL,
+            title TEXT NOT NULL,
+            type TEXT NOT NULL,
             description TEXT,
             requirements TEXT,
             difficulty TEXT,
@@ -190,8 +190,8 @@ def create_skills_table(conn):
     conn.execute('''
         CREATE TABLE IF NOT EXISTS skills (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            name TEXT NOT NOT NULL,
-            category TEXT NOT NOT NULL,
+            name TEXT NOT NULL,
+            category TEXT NOT NULL,
             description TEXT,
             value_level TEXT,
             author_id TEXT NOT NULL,
@@ -373,7 +373,7 @@ def create_indexes(conn):
     
     # skill_downloads 表索引
     conn.execute('CREATE INDEX IF NOT EXISTS idx_skill_downloads_skill_id ON skill_downloads(skill_id)')
-    conn.execute('CREATE INDEX IF NOT EXISTS idx_skill_downloads_downloader_id ON skill_downloader(downloader_id)')
+    conn.execute('CREATE INDEX IF NOT EXISTS idx_skill_downloads_downloader_id ON skill_downloads(downloader_id)')
     print("✅ Created indexes for skill_downloads table")
     
     # skill_ratings 表索引
